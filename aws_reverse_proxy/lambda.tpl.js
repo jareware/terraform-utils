@@ -5,6 +5,10 @@ const config = ${config};
 const addResponseHeaders = ${add_response_headers};
 const validCredentials = config.basic_auth_username + ':' + config.basic_auth_password;
 const validAuthHeader = 'Basic ' + new Buffer(validCredentials).toString('base64');
+const hstsHeaders =
+  config.hsts_max_age && config.viewer_https_only
+    ? { 'Strict-Transport-Security': 'max-age=' + config.hsts_max_age + '; preload' }
+    : {}; // don't send HSTS headers when vanilla HTTP is allowed, as that'll make the vanilla HTTP site unavailable for anyone having visited the HTTPS one!
 
 log('aws_static_site.config', { config, addResponseHeaders });
 
@@ -20,9 +24,12 @@ exports.viewer_request = (event, context, callback) => {
       status: config.override_response_status,
       statusDescription: config.override_response_status_description,
       body: config.override_response_body,
-      headers: formatHeaders(addResponseHeaders),
+      headers: {
+        ...formatHeaders(hstsHeaders),
+        ...formatHeaders(addResponseHeaders),
+      },
     };
-    callback(null, response); // reply to the client with the overridden content, and don't forward request to origin
+    callback(null, response); // reply to the client with the overridden content, and don't forward request to origin at all
     log('aws_static_site.viewer_request.after', response);
   } else if (
     (config.basic_auth_username || config.basic_auth_password) &&
@@ -33,6 +40,7 @@ exports.viewer_request = (event, context, callback) => {
       statusDescription: 'Unauthorized',
       body: config.basic_auth_body,
       headers: {
+        ...formatHeaders(hstsHeaders),
         ...formatHeaders(addResponseHeaders),
         ...formatHeaders({
           'WWW-Authenticate': 'Basic realm="' + config.basic_auth_realm + '", charset="UTF-8"',
@@ -54,6 +62,7 @@ exports.viewer_response = (event, context, callback) => {
   log('aws_static_site.viewer_response.before', response);
 
   response.headers = {
+    ...formatHeaders(hstsHeaders),
     ...response.headers,
     ...formatHeaders(addResponseHeaders),
   };

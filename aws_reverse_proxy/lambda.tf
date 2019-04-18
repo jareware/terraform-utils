@@ -1,5 +1,6 @@
 locals {
   config = {
+    hsts_max_age                         = "${var.hsts_max_age}"
     basic_auth_username                  = "${var.basic_auth_username}"
     basic_auth_password                  = "${var.basic_auth_password}"
     basic_auth_realm                     = "${var.basic_auth_realm}"
