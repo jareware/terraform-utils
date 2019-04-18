@@ -20,7 +20,6 @@ module "my_host" {
   ssh_private_key_path = "~/.ssh/id_rsa"
   ssh_public_key_path  = "~/.ssh/id_rsa.pub"
   allow_incoming_http  = true
-  reprovision_trigger  = "${module.my_docker_compose.reprovision_trigger}"
 }
 
 module "my_docker_compose" {
