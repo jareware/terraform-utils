@@ -36,7 +36,7 @@ EOF
   }
 
   provisioner "file" {
-    content     = "${var.docker_compose_override_yml}"
+    content     = "${var.docker_compose_override_yml != "" ? "${var.docker_compose_override_yml}" : "${local.docker_compose_override_yml_default}"}"
     destination = "/home/${var.ssh_username}/docker-compose.override.yml"
   }
 

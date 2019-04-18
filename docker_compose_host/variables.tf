@@ -30,12 +30,7 @@ variable "docker_compose_yml" {
 
 variable "docker_compose_override_yml" {
   description = "Contents for the `docker-compose.override.yml` file (see https://docs.docker.com/compose/extends/#multiple-compose-files)"
-
-  default = <<EOF
-# Any docker-compose services defined here will be merged on top of docker-compose.yml
-# See: https://docs.docker.com/compose/extends/#multiple-compose-files
-version: "3"
-EOF
+  default     = ""
 }
 
 variable "docker_compose_up_command" {
@@ -46,4 +41,12 @@ variable "docker_compose_up_command" {
 variable "docker_compose_down_command" {
   description = "Command to remove services with; will be run during un- or re-provisioning"
   default     = "docker-compose stop && docker-compose rm -f"
+}
+
+locals {
+  docker_compose_override_yml_default = <<EOF
+# Any docker-compose services defined here will be merged on top of docker-compose.yml
+# See: https://docs.docker.com/compose/extends/#multiple-compose-files
+version: "3"
+EOF
 }
