@@ -25,7 +25,7 @@ data "template_file" "lambda" {
 # Lambda functions can only be uploaded as ZIP files, so we need to package our JS file into one
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  output_path = "${path.module}/lambda.zip"
+  output_path = "${path.module}/lambda-${local.prefix_with_domain}.zip" # use the domain as part of the file name to make it unique, so that invoking the module multiple times doesn't interfere with itself
 
   source {
     filename = "lambda.js"
