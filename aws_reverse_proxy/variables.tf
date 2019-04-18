@@ -27,8 +27,8 @@ variable "viewer_https_only" {
 }
 
 variable "cache_ttl_override" {
-  description = "When >= 0, override the cache behaviour for ALL objects in the origin, so that they stay in the CloudFront cache for this amount of seconds"
-  default     = -1
+  description = "When `-1`, cache based on origin cache headers; when `0`, disable caching completely; when `>0`, cache ALL objects for this many seconds, regardless of their cache headers"
+  default     = 0
 }
 
 variable "default_root_object" {
