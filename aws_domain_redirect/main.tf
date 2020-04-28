@@ -10,11 +10,11 @@ module "aws_reverse_proxy" {
   cloudfront_price_class = "${var.cloudfront_price_class}"
   viewer_https_only      = "${var.viewer_https_only}"
   lambda_logging_enabled = "${var.lambda_logging_enabled}"
+  hsts_max_age           = "${var.hsts_max_age}"
   tags                   = "${var.tags}"
 
   add_response_headers = {
-    "Strict-Transport-Security" = "${var.redirect_with_hsts ? "max-age=31557600; preload" : ""}"
-    "Location"                  = "${var.redirect_url}"
+    "Location" = "${var.redirect_url}"
   }
 
   override_response_status             = "${var.redirect_permanently ? "301" : "302"}"

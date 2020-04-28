@@ -40,10 +40,12 @@ variable "default_root_object" {
 variable "add_response_headers" {
   description = "Map of HTTP headers (if any) to add to outgoing responses before sending them to clients"
   type        = "map"
+  default     = {}
+}
 
-  default = {
-    "Strict-Transport-Security" = "max-age=31557600; preload" # i.e. 1 year (in seconds)
-  }
+variable "hsts_max_age" {
+  description = "How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false`"
+  default     = 31557600                                                                                                                             # i.e. one year in seconds
 }
 
 variable "basic_auth_username" {

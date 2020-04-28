@@ -31,9 +31,9 @@ variable "redirect_permanently" {
   default     = false
 }
 
-variable "redirect_with_hsts" {
-  description = "Whether to send the `Strict-Transport-Security` header with the redirect (recommended for security)"
-  default     = true
+variable "hsts_max_age" {
+  description = "How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false`"
+  default     = 31557600                                                                                                                             # i.e. one year in seconds
 }
 
 variable "lambda_logging_enabled" {

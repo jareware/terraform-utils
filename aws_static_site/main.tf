@@ -21,6 +21,7 @@ module "aws_reverse_proxy" {
   cache_ttl_override     = "${var.cache_ttl_override}"
   default_root_object    = "${var.default_root_object}"
   add_response_headers   = "${var.add_response_headers}"
+  hsts_max_age           = "${var.hsts_max_age}"
   basic_auth_username    = "${var.basic_auth_username}"
   basic_auth_password    = "${var.basic_auth_password}"
   basic_auth_realm       = "${var.basic_auth_realm}"
