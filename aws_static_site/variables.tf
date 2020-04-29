@@ -4,17 +4,12 @@ variable "site_domain" {
 
 variable "name_prefix" {
   description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility)"
-  default     = "aws-static-site---"
+  default     = "aws-static-site"
 }
 
 variable "comment_prefix" {
   description = "This will be included in comments for resources that are created"
   default     = "Static site: "
-}
-
-variable "bucket_override_name" {
-  description = "When provided, assume a bucket with this name already exists for the site content, instead of creating the bucket automatically (e.g. `\"my-bucket\"`)"
-  default     = ""
 }
 
 variable "cloudfront_price_class" {
@@ -39,13 +34,13 @@ variable "default_root_object" {
 
 variable "add_response_headers" {
   description = "Map of HTTP headers (if any) to add to outgoing responses before sending them to clients"
-  type        = "map"
+  type        = map
   default     = {}
 }
 
 variable "hsts_max_age" {
   description = "How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false`"
-  default     = 31557600                                                                                                                             # i.e. one year in seconds
+  default     = 31557600 # i.e. one year in seconds
 }
 
 variable "basic_auth_username" {
@@ -75,13 +70,6 @@ variable "lambda_logging_enabled" {
 
 variable "tags" {
   description = "AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/"
-  type        = "map"
+  type        = map(string)
   default     = {}
-}
-
-locals {
-  prefix_with_domain = "${var.name_prefix}${replace("${var.site_domain}", "/[^a-z0-9-]+/", "-")}"                          # only lowercase alphanumeric characters and hyphens are allowed in S3 bucket names
-  bucket_name        = "${var.bucket_override_name == "" ? "${local.prefix_with_domain}" : "${var.bucket_override_name}"}" # select between externally-provided or auto-generated bucket names
-  bucket_domain_name = "${local.bucket_name}.s3-website.${data.aws_region.current.name}.amazonaws.com"                     # use current region to complete the domain name (we can't use the "aws_s3_bucket" data source because the bucket may not initially exist)
-  error_ttl          = "${var.cache_ttl_override >= 0 ? var.cache_ttl_override : 0}"
 }
