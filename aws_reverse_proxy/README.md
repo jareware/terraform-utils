@@ -27,7 +27,7 @@ Resources used:
 
 ## About CloudFront operations
 
-This module manages CloudFront distributions, and these operations are generally very slow. Your `terraform apply` may take anywhere **from 10 minutes up to 45 minutes** to complete. Be patient: if they start successfully, they almost always finish successfully, it just takes a while.
+This module manages CloudFront distributions, and these operations are generally very slow. Your `terraform apply` may take anywhere from a few minutes **up to 45 minutes** (if you're really unlucky). Be patient: if they start successfully, they almost always finish successfully, it just takes a while.
 
 Additionally, this module uses Lambda@Edge functions with CloudFront. Because Lambda@Edge functions are replicated, [they can't be deleted immediately](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html). This means a `terraform destroy` won't successfully remove all resources on its first run. It should complete successfully when running it again after a few hours, however.
 
@@ -69,7 +69,7 @@ The above is a good middle ground caching strategy, for when you want immediate 
 
 If your origin server doesn't give out sensible cache control headers, or you're just feeling lazy, this module supports overriding cache behaviour on CloudFront, effectively ignoring anything your origin says about caching objects.
 
-That is, if you specify `cache_ttl_override = 0` for your site, every object will always be fetched from the origin, for every request. Importantly, though, this won't invalidate objects that *are already* in the CloudFront cache with a longer TTL. If you have an object that's "stuck" in your cache and you can't shake it, the CloudFront feature you're looking for is [file invalidation](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html).
+That is, if you specify `cache_ttl_override = 0` for your site, every object will always be fetched from the origin, for every request. Importantly, though, this won't invalidate objects that _are already_ in the CloudFront cache with a longer TTL. If you have an object that's "stuck" in your cache and you can't shake it, the CloudFront feature you're looking for is [file invalidation](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html).
 
 Conversely, if you specify `cache_ttl_override = 300`, every object will stay in CloudFront for 5 minutes, regardless of its cache headers. This can be a good performance boost for your site, since only 1 request per file per 5 minutes will need to go all the way to the origin, and all the others can be served immediately from the CloudFront edge location. Keep in mind the aforementioned warning about "inconsistent versions", however: each object has their own TTL counter, so `index.html` and `image.jpg` may update at different times in the cache, even if you update content at your origin at the same time.
 
@@ -79,7 +79,7 @@ Conversely, if you specify `cache_ttl_override = 300`, every object will stay in
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | site_domain | Domain on which the reverse proxy will be made available (e.g. `"www.example.com"`) | `any` | n/a | yes |
-| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility) | `string` | `""` | no |
+| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility); if omitted, a random, unique one will be used | `string` | `""` | no |
 | comment_prefix | This will be included in comments for resources that are created | `string` | `"Reverse proxy: "` | no |
 | origin_url | Base URL for proxy upstream site (e.g. `"https://example.com/"`) | `any` | n/a | yes |
 | cloudfront_price_class | CloudFront price class to use (`100`, `200` or `"All"`, see https://aws.amazon.com/cloudfront/pricing/) | `number` | `100` | no |
