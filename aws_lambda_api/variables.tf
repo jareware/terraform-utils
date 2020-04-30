@@ -4,7 +4,7 @@ variable "api_domain" {
 
 variable "name_prefix" {
   description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility)"
-  default     = "aws-lambda-api---"
+  default     = "aws-lambda-api"
 }
 
 variable "comment_prefix" {
@@ -38,12 +38,12 @@ variable "memory_size" {
 
 variable "function_runtime" {
   description = "Which node.js version should Lambda use for this function"
-  default     = "nodejs8.10"
+  default     = "nodejs12.x"
 }
 
 variable "function_env_vars" {
   description = "Which env vars (if any) to invoke the Lambda with"
-  type        = "map"
+  type        = map(string)
 
   default = {
     # This effectively useless, but an empty map can't be used in the "aws_lambda_function" resource
@@ -72,9 +72,14 @@ variable "api_gateway_cloudwatch_metrics" {
   default     = false
 }
 
+variable "api_gateway_endpoint_config" {
+  description = "Either `\"EDGE\"`, `\"REGIONAL\"` or `\"PRIVATE\"`; see https://docs.aws.amazon.com/apigateway/latest/developerguide/create-regional-api.html"
+  default     = "EDGE"
+}
+
 variable "tags" {
   description = "AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
 
@@ -86,8 +91,4 @@ variable "throttling_rate_limit" {
 variable "throttling_burst_limit" {
   description = "How many burst requests should the API process at most; see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html"
   default     = 5000
-}
-
-locals {
-  prefix_with_domain = "${var.name_prefix}${replace("${var.api_domain}", "/[^a-z0-9-]+/", "-")}" # only lowercase alphanumeric characters and hyphens are allowed in e.g. S3 bucket names
 }
