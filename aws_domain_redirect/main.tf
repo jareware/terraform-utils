@@ -6,7 +6,7 @@ module "aws_reverse_proxy" {
 
   origin_url             = "http://example.com/" # note that this is just a dummy value to satisfy CloudFront, it won't ever be used with the override_* variables in place
   site_domain            = var.redirect_domain
-  name_prefix            = var.name_prefix
+  name_prefix            = "${local.name_prefix}-rp"
   comment_prefix         = var.comment_prefix
   cloudfront_price_class = var.cloudfront_price_class
   viewer_https_only      = var.viewer_https_only
