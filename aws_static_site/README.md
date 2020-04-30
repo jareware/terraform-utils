@@ -16,7 +16,6 @@ Optional features:
 - Plain HTTP instead of HTTPS
 - Cache TTL overrides
 - Custom response headers sent to clients
-- Creating the S3 bucket outside of this module and passing it in via variable
 
 Resources used:
 
@@ -28,7 +27,7 @@ Resources used:
 
 ## About CloudFront operations
 
-This module manages CloudFront distributions, and these operations are generally very slow. Your `terraform apply` may take anywhere **from 10 minutes up to 45 minutes** to complete. Be patient: if they start successfully, they almost always finish successfully, it just takes a while.
+This module manages CloudFront distributions, and these operations are generally very slow. Your `terraform apply` may take anywhere from a few minutes **up to 45 minutes** (if you're really unlucky). Be patient: if they start successfully, they almost always finish successfully, it just takes a while.
 
 Additionally, this module uses Lambda@Edge functions with CloudFront. Because Lambda@Edge functions are replicated, [they can't be deleted immediately](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html). This means a `terraform destroy` won't successfully remove all resources on its first run. It should complete successfully when running it again after a few hours, however.
 
@@ -49,13 +48,14 @@ provider "aws" {
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v11.0"
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v11.0"
+  providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   site_domain = "hello.example.com"
 }
 
 resource "aws_s3_bucket_object" "my_index" {
-  bucket       = "${module.my_site.bucket_name}"
+  bucket       = module.my_site.bucket_name
   key          = "index.html"
   content      = "<pre>Hello World!</pre>"
   content_type = "text/html; charset=utf-8"
@@ -63,11 +63,11 @@ resource "aws_s3_bucket_object" "my_index" {
 
 output "bucket_name" {
   description = "The name of the S3 bucket that's used for hosting the content"
-  value       = "${module.my_site.bucket_name}"
+  value       = module.my_site.bucket_name
 }
 ```
 
-After `terraform apply` (which may take a **very** long time), you should be able to visit `hello.example.com`, be redirected to HTTPS, and be greeted by the above `Hello World!` message.
+After `terraform apply` (which may take a long time), you should be able to visit `hello.example.com`, be redirected to HTTPS, and be greeted by the above `Hello World!` message.
 
 You may (and probably will) want to upload more files into the bucket outside of Terraform. Using the official [AWS CLI](https://aws.amazon.com/cli/) this could look like:
 
@@ -96,7 +96,7 @@ module "my_site" {
 }
 ```
 
-After `terraform apply` (which may take a **very** long time), visiting `hello.example.com` should pop out the browser's authentication dialog, and not let you proceed without the above credentials.
+After `terraform apply` (which may take a long time), visiting `hello.example.com` should pop out the browser's authentication dialog, and not let you proceed without the above credentials.
 
 ## Example 3: Custom response headers
 
@@ -185,31 +185,7 @@ module "my_site" {
 }
 ```
 
-After `terraform apply` (which may take a **very** long time), visiting `hello.example.com` should give you these extra headers.
-
-It's also possible to override existing headers. For example:
-
-```tf
-module "my_site" {
-  # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v11.0"
-
-  site_domain = "hello.example.com"
-
-  add_response_headers = {
-    "Server" = "My Secret Origin Server"
-  }
-}
-```
-
-After `terraform apply`, checking with `curl --silent -I https://hello.example.com | grep Server` should give you `My Secret Origin Server` instead of the default `AmazonS3`.
-
-## Example 4: Using your own bucket
-
-If you already have an S3 bucket that you want to use, you can provide e.g. `bucket_override_name = "my-existing-s3-bucket"` as a variable for this module.
-
-When `bucket_override_name` is provided, an S3 bucket is not automatically created for you. Note that you're then also responsible for setting up a bucket policy allowing CloudFront access to the bucket contents.
+After `terraform apply` (which may take a long time), visiting `hello.example.com` should give you these extra headers (and hide some upstream headers that were originally present).
 
 ## How CloudFront caching works
 
