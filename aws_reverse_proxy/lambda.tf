@@ -56,7 +56,7 @@ resource "aws_lambda_function" "viewer_request" {
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  function_name    = "${var.name_prefix}-edge-lambda-request"
+  function_name    = "${local.name_prefix}-request-handler"
   role             = aws_iam_role.this.arn
   description      = "${var.comment_prefix}${var.site_domain} (request handler)"
   handler          = "lambda.viewer_request"
@@ -70,7 +70,7 @@ resource "aws_lambda_function" "origin_response" {
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  function_name    = "${var.name_prefix}-edge-lambda-response"
+  function_name    = "${local.name_prefix}-response-handler"
   role             = aws_iam_role.this.arn
   description      = "${var.comment_prefix}${var.site_domain} (response handler)"
   handler          = "lambda.origin_response"
@@ -81,7 +81,7 @@ resource "aws_lambda_function" "origin_response" {
 
 # Allow Lambda@Edge to invoke our functions
 resource "aws_iam_role" "this" {
-  name = var.name_prefix
+  name = local.name_prefix
   tags = var.tags
 
   assume_role_policy = <<EOF
@@ -106,7 +106,7 @@ EOF
 # Allow writing logs to CloudWatch from our functions
 resource "aws_iam_policy" "this" {
   count = var.lambda_logging_enabled ? 1 : 0
-  name  = var.name_prefix
+  name  = local.name_prefix
 
   policy = <<EOF
 {

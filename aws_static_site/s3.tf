@@ -1,6 +1,6 @@
 # Create the S3 bucket in which the static content for the site should be hosted
 resource "aws_s3_bucket" "this" {
-  bucket = "${var.name_prefix}-content"
+  bucket = "${local.name_prefix}-content"
   tags   = var.tags
 
   # Add a CORS configuration, so that we don't have issues with webfont loading

@@ -13,7 +13,7 @@ module "aws_reverse_proxy" {
   origin_custom_header_value = random_string.s3_read_password.result
 
   site_domain            = var.site_domain
-  name_prefix            = var.name_prefix
+  name_prefix            = "${local.name_prefix}-rp"
   comment_prefix         = var.comment_prefix
   cloudfront_price_class = var.cloudfront_price_class
   viewer_https_only      = var.viewer_https_only
