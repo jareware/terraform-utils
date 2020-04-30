@@ -1,24 +1,26 @@
 # Create the main EC2 instance
 # https://www.terraform.io/docs/providers/aws/r/instance.html
 resource "aws_instance" "this" {
-  instance_type          = "${var.instance_type}"
-  ami                    = "${var.instance_ami}"
-  availability_zone      = "${local.availability_zone}"
-  key_name               = "${aws_key_pair.this.id}"                            # the name of the SSH keypair to use for provisioning
-  vpc_security_group_ids = ["${aws_security_group.this.id}"]
-  subnet_id              = "${data.aws_subnet.this.id}"
-  user_data              = "${sha1(local.reprovision_trigger)}"                 # this value isn't used by the EC2 instance, but its change will trigger re-creation of the resource
-  tags                   = "${merge(var.tags, map("Name", "${var.hostname}"))}"
-  volume_tags            = "${merge(var.tags, map("Name", "${var.hostname}"))}" # give the root EBS volume a name (+ other possible tags) that makes it easier to identify as belonging to this host
+  instance_type          = var.instance_type
+  ami                    = var.instance_ami
+  availability_zone      = local.availability_zone
+  key_name               = aws_key_pair.this.id # the name of the SSH keypair to use for provisioning
+  vpc_security_group_ids = [aws_security_group.this.id]
+  subnet_id              = data.aws_subnet.this.id
+  user_data              = sha1(local.reprovision_trigger) # this value isn't used by the EC2 instance, but its change will trigger re-creation of the resource
+  tags                   = merge(var.tags, { Name = var.hostname })
+  volume_tags            = merge(var.tags, { Name = var.hostname }) # give the root EBS volume a name (+ other possible tags) that makes it easier to identify as belonging to this host
 
   root_block_device {
-    volume_size = "${var.root_volume_size}"
+    volume_size = var.root_volume_size
   }
 
   connection {
-    user        = "${var.ssh_username}"
-    private_key = "${file("${var.ssh_private_key_path}")}"
-    agent       = false                                    # don't use SSH agent because we have the private key right here
+    host        = coalesce(self.public_ip, self.private_ip)
+    type        = "ssh"
+    user        = var.ssh_username
+    private_key = file(var.ssh_private_key_path)
+    agent       = false # don't use SSH agent because we have the private key right here
   }
 
   provisioner "remote-exec" {
@@ -48,21 +50,21 @@ resource "aws_instance" "this" {
 # Attach the separate data volume to the instance, if so configured
 
 resource "aws_volume_attachment" "this" {
-  count       = "${var.data_volume_id == "" ? 0 : 1}" # only create this resource if an external EBS data volume was provided
-  device_name = "/dev/xvdh"                           # note: this depends on the AMI, and can't be arbitrarily changed
-  instance_id = "${aws_instance.this.id}"
-  volume_id   = "${var.data_volume_id}"
+  count       = var.data_volume_id == "" ? 0 : 1 # only create this resource if an external EBS data volume was provided
+  device_name = "/dev/xvdh"                      # note: this depends on the AMI, and can't be arbitrarily changed
+  instance_id = aws_instance.this.id
+  volume_id   = var.data_volume_id
 }
 
 resource "null_resource" "provisioners" {
-  count      = "${var.data_volume_id == "" ? 0 : 1}" # only create this resource if an external EBS data volume was provided
-  depends_on = ["aws_volume_attachment.this"]        # because we depend on the EBS volume being available
+  count      = var.data_volume_id == "" ? 0 : 1 # only create this resource if an external EBS data volume was provided
+  depends_on = [aws_volume_attachment.this]     # because we depend on the EBS volume being available
 
   connection {
-    host        = "${aws_instance.this.public_ip}"
-    user        = "${var.ssh_username}"
-    private_key = "${file("${var.ssh_private_key_path}")}"
-    agent       = false                                    # don't use SSH agent because we have the private key right here
+    host        = aws_instance.this.public_ip # see https://github.com/hashicorp/terraform/issues/23679 for discussion on the deprecation warning for this line
+    user        = var.ssh_username
+    private_key = file(var.ssh_private_key_path)
+    agent       = false # don't use SSH agent because we have the private key right here
   }
 
   # When creating the attachment
@@ -72,7 +74,7 @@ resource "null_resource" "provisioners" {
 
   # When tearing down the attachment
   provisioner "remote-exec" {
-    when   = "destroy"
-    inline = ["sudo umount -v ${aws_volume_attachment.this.device_name}"]
+    when   = destroy
+    inline = ["sudo umount -v ${aws_volume_attachment.this[0].device_name}"]
   }
 }
