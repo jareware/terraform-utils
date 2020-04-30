@@ -237,29 +237,28 @@ Learn more about [effective caching strategies on CloudFront](../aws_reverse_pro
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| add_response_headers | Map of HTTP headers (if any) to add to outgoing responses before sending them to clients | map | `<map>` | no |
-| basic_auth_body | When using HTTP Basic Auth, and authentication has failed, this will be displayed by the browser as the page content | string | `"Unauthorized"` | no |
-| basic_auth_password | When non-empty, require this password with HTTP Basic Auth | string | `""` | no |
-| basic_auth_realm | When using HTTP Basic Auth, this will be displayed by the browser in the auth prompt | string | `"Authentication Required"` | no |
-| basic_auth_username | When non-empty, require this username with HTTP Basic Auth | string | `""` | no |
-| bucket_override_name | When provided, assume a bucket with this name already exists for the site content, instead of creating the bucket automatically (e.g. `"my-bucket"`) | string | `""` | no |
-| cache_ttl_override | When >= 0, override the cache behaviour for ALL objects in S3, so that they stay in the CloudFront cache for this amount of seconds | string | `"-1"` | no |
-| cloudfront_price_class | CloudFront price class to use (`100`, `200` or `"All"`, see https://aws.amazon.com/cloudfront/pricing/) | string | `"100"` | no |
-| comment_prefix | This will be included in comments for resources that are created | string | `"Static site: "` | no |
-| default_root_object | The object to return when the root URL is requested | string | `"index.html"` | no |
-| lambda_logging_enabled | When true, writes information about incoming requests to the Lambda function's CloudWatch group | string | `"false"` | no |
-| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility) | string | `"aws-static-site---"` | no |
-| site_domain | Domain on which the static site will be made available (e.g. `"www.example.com"`) | string | n/a | yes |
-| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | map | `<map>` | no |
-| viewer_https_only | Set this to `false` if you need to support insecure HTTP access for clients, in addition to HTTPS | string | `"true"` | no |
+|------|-------------|------|---------|:--------:|
+| site_domain | Domain on which the static site will be made available (e.g. `"www.example.com"`) | `any` | n/a | yes |
+| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility) | `string` | `""` | no |
+| comment_prefix | This will be included in comments for resources that are created | `string` | `"Static site: "` | no |
+| cloudfront_price_class | CloudFront price class to use (`100`, `200` or `"All"`, see https://aws.amazon.com/cloudfront/pricing/) | `number` | `100` | no |
+| viewer_https_only | Set this to `false` if you need to support insecure HTTP access for clients, in addition to HTTPS | `bool` | `true` | no |
+| cache_ttl_override | When >= 0, override the cache behaviour for ALL objects in S3, so that they stay in the CloudFront cache for this amount of seconds | `number` | `-1` | no |
+| default_root_object | The object to return when the root URL is requested | `string` | `"index.html"` | no |
+| add_response_headers | Map of HTTP headers (if any) to add to outgoing responses before sending them to clients | `map` | `{}` | no |
+| hsts_max_age | How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false` | `number` | `31557600` | no |
+| basic_auth_username | When non-empty, require this username with HTTP Basic Auth | `string` | `""` | no |
+| basic_auth_password | When non-empty, require this password with HTTP Basic Auth | `string` | `""` | no |
+| basic_auth_realm | When using HTTP Basic Auth, this will be displayed by the browser in the auth prompt | `string` | `"Authentication Required"` | no |
+| basic_auth_body | When using HTTP Basic Auth, and authentication has failed, this will be displayed by the browser as the page content | `string` | `"Unauthorized"` | no |
+| lambda_logging_enabled | When true, writes information about incoming requests to the Lambda function's CloudWatch group | `bool` | `false` | no |
+| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| bucket_domain_name | Full S3 domain name for the bucket used for hosting the content (e.g. `"aws-static-site---hello-example-com.s3-website.eu-central-1.amazonaws.com"`) |
-| bucket_name | The name of the S3 bucket that's used for hosting the content (either auto-generated or externally provided) |
-| cloudfront_id | The ID of the CloudFront distribution that's used for hosting the content |
-| site_domain | Domain on which the static site will be made available |
+| bucket_name | The name of the S3 bucket that's used for hosting the content |
+| reverse_proxy | CloudFront-based reverse-proxy that's used for performance, access control, etc |
+| bucket_domain_name | Full S3 domain name for the bucket used for hosting the content (e.g. `"aws-static-site.s3-website.eu-central-1.amazonaws.com"`) |
 <!-- terraform-docs:end -->

@@ -77,33 +77,36 @@ Conversely, if you specify `cache_ttl_override = 300`, every object will stay in
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| add_response_headers | Map of HTTP headers (if any) to add to outgoing responses before sending them to clients | map | `<map>` | no |
-| basic_auth_body | When using HTTP Basic Auth, and authentication has failed, this will be displayed by the browser as the page content | string | `"Unauthorized"` | no |
-| basic_auth_password | When non-empty, require this password with HTTP Basic Auth | string | `""` | no |
-| basic_auth_realm | When using HTTP Basic Auth, this will be displayed by the browser in the auth prompt | string | `"Authentication Required"` | no |
-| basic_auth_username | When non-empty, require this username with HTTP Basic Auth | string | `""` | no |
-| cache_ttl_override | When >= 0, override the cache behaviour for ALL objects in the origin, so that they stay in the CloudFront cache for this amount of seconds | string | `"-1"` | no |
-| cloudfront_price_class | CloudFront price class to use (`100`, `200` or `"All"`, see https://aws.amazon.com/cloudfront/pricing/) | string | `"100"` | no |
-| comment_prefix | This will be included in comments for resources that are created | string | `"Reverse proxy: "` | no |
-| default_root_object | The object to return when the root URL is requested | string | `""` | no |
-| lambda_logging_enabled | When true, writes information about incoming requests to the Lambda function's CloudWatch group | string | `"false"` | no |
-| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility) | string | `"aws-reverse-proxy---"` | no |
-| origin_custom_header_name | Name of a custom header to send to the origin; this can be used to convey an authentication header to the origin, for example | string | `"X-Custom-Origin-Header"` | no |
-| origin_custom_header_value | Value of a custom header to send to the origin; see `origin_custom_header_name` | string | `""` | no |
-| origin_custom_port | When > 0, use this port for communication with the origin server, instead of relevant standard port | string | `"0"` | no |
-| origin_url | Base URL for proxy upstream site (e.g. `"https://example.com/"`) | string | n/a | yes |
-| override_response_body | Same as `override_response_status` | string | `""` | no |
-| override_response_status | When this and the other `override_response_*` variables are non-empty, skip sending the request to the origin altogether, and instead respond as instructed here | string | `""` | no |
-| override_response_status_description | Same as `override_response_status` | string | `""` | no |
-| site_domain | Domain on which the reverse proxy will be made available (e.g. `"www.example.com"`) | string | n/a | yes |
-| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | map | `<map>` | no |
-| viewer_https_only | Set this to `false` if you need to support insecure HTTP access for clients, in addition to HTTPS | string | `"true"` | no |
+|------|-------------|------|---------|:--------:|
+| site_domain | Domain on which the reverse proxy will be made available (e.g. `"www.example.com"`) | `any` | n/a | yes |
+| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility) | `string` | `""` | no |
+| comment_prefix | This will be included in comments for resources that are created | `string` | `"Reverse proxy: "` | no |
+| origin_url | Base URL for proxy upstream site (e.g. `"https://example.com/"`) | `any` | n/a | yes |
+| cloudfront_price_class | CloudFront price class to use (`100`, `200` or `"All"`, see https://aws.amazon.com/cloudfront/pricing/) | `number` | `100` | no |
+| viewer_https_only | Set this to `false` if you need to support insecure HTTP access for clients, in addition to HTTPS | `bool` | `true` | no |
+| cache_ttl_override | When `-1`, cache based on origin cache headers; when `0`, disable caching completely; when `>0`, cache ALL objects for this many seconds, regardless of their cache headers | `number` | `-1` | no |
+| default_root_object | The object to return when the root URL is requested | `string` | `""` | no |
+| add_response_headers | Map of HTTP headers (if any) to add to outgoing responses before sending them to clients | `map(string)` | `{}` | no |
+| hsts_max_age | How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false` | `number` | `31557600` | no |
+| origin_custom_header_name | Name of a custom header to send to the origin; this can be used to convey an authentication header to the origin, for example | `string` | `"X-Custom-Origin-Header"` | no |
+| origin_custom_header_value | Value of a custom header to send to the origin; see `origin_custom_header_name` | `string` | `""` | no |
+| origin_custom_port | When > 0, use this port for communication with the origin server, instead of relevant standard port | `number` | `0` | no |
+| override_response_code | When non-empty, replace the HTTP status code received from the origin with this; e.g. override a `404` into a `200` | `string` | `""` | no |
+| override_response_status | When non-empty, replace the HTTP status description received from the origin with this; e.g. override a `"Not Found"` into a `"OK"` | `string` | `""` | no |
+| override_response_body | When this and ALL other `override_response_*` variables are non-empty, skip sending the request to the origin altogether, and instead respond as instructed here | `string` | `""` | no |
+| override_only_on_code | When non-empty, limits when `override_response_*` variables take effect; for example, setting this to `"404"` allows you to turn origin 404's into 200's, while still passing a 302 redirect through to the client (JS-style regex allowed) | `string` | `""` | no |
+| basic_auth_username | When non-empty, require this username with HTTP Basic Auth | `string` | `""` | no |
+| basic_auth_password | When non-empty, require this password with HTTP Basic Auth | `string` | `""` | no |
+| basic_auth_realm | When using HTTP Basic Auth, this will be displayed by the browser in the auth prompt | `string` | `"Authentication Required"` | no |
+| basic_auth_body | When using HTTP Basic Auth, and authentication has failed, this will be displayed by the browser as the page content | `string` | `"Unauthorized"` | no |
+| lambda_logging_enabled | When true, writes information about incoming requests to the Lambda function's CloudWatch group; IMPORTANT: Lambda will log to CloudWatch on the nearest region of the POP processing the request, NOT necessarily your own region. | `bool` | `false` | no |
+| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | cloudfront_id | The ID of the CloudFront distribution that's used for hosting the content |
+| web_endpoint | URL on which the site will be made available |
 | site_domain | Domain on which the site will be made available |
 <!-- terraform-docs:end -->
