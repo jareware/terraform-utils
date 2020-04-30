@@ -104,7 +104,7 @@ This module supports injecting custom headers into CloudFront responses, via a L
 
 By default, the function only adds `Strict-Transport-Security` headers (as it [significantly improves security](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security#An_example_scenario) with HTTPS), but you may need other customization.
 
-For [additional security hardening of your static site](https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/), update the `my_site` module in Example 1 as follows:
+For [additional security hardening of your static site](https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/), including a fairly-draconian (and thoroughly-documented) [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), update the `my_site` module in Example 1 as follows:
 
 ```tf
 module "my_site" {
@@ -115,12 +115,72 @@ module "my_site" {
   site_domain = "hello.example.com"
 
   add_response_headers = {
-    "Strict-Transport-Security" = "max-age=63072000; includeSubdomains; preload"
-    "Content-Security-Policy"   = "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
-    "X-Content-Type-Options"    = "nosniff"
-    "X-Frame-Options"           = "DENY"
-    "X-XSS-Protection"          = "1; mode=block"
-    "Referrer-Policy"           = "same-origin"
+
+    # Add basic security headers:
+    Strict-Transport-Security = "max-age=31536000" # the page should ONLY be accessed using HTTPS, instead of using HTTP (max-age == one year)
+    X-Content-Type-Options    = "nosniff"          # the MIME types advertised in the Content-Type headers should ALWAYS be followed; this allows to opt-out of MIME type sniffing
+    X-Frame-Options           = "DENY"             # disallow rendering the page inside a frame; besides legacy browsers, superseded by CSP
+    X-XSS-Protection          = "1; mode=block"    # stops pages from loading when they detect reflected cross-site scripting (XSS) attacks; besides legacy browsers, superseded by CSP
+    Referrer-Policy           = "same-origin"      # a referrer will be sent for same-site origins, but cross-origin requests will send no referrer information
+
+    # Remove some headers which could disclose details about our upstream server
+    # Note that not all headers can be altered by Lambda@Edge: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-header-restrictions
+    Server                 = "" # "Server" header can't be removed, but this will reset it to "CloudFront"
+    X-Amz-Error-Code       = ""
+    X-Amz-Error-Message    = ""
+    X-Amz-Error-Detail-Key = ""
+    X-Amz-Request-Id       = ""
+    X-Amz-Id-2             = ""
+
+    # Add CSP header:
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+    Content-Security-Policy = replace(replace(replace(<<-EOT
+
+      default-src # serves as a fallback for the other CSP fetch directives; for many of the following directives, if they are absent, the user agent will look for the default-src directive and will use this value for it
+        'none' # by default, don't allow anything; we'll specifically white-list things below
+        ;
+      block-all-mixed-content # prevents loading any assets using HTTP when the page is loaded using HTTPS
+        ;
+      connect-src # restricts the URLs which can be loaded using script interfaces (e.g. XHR, WebSocket)
+        api.example.com # allow connecting to this specific API (not not others!)
+        ;
+      form-action # restricts the URLs which can be used as the target of a form submission
+        'none' # for better or worse, most forms today are JavaScript-only -> we can prohibit all normal form submission
+        ;
+      img-src # specifies valid sources of images and favicons
+        'self' # allow regular images that ship with the UI
+        data: # allow small assets which have been inlined by webpack
+        ;
+      font-src # specifies valid sources of webfonts
+        'self' # allow loading self-hosted fonts; add e.g. fonts.googleapis.com here (without any quotes!) to allow loading Google Fonts (https://fonts.google.com/)
+        ;
+      manifest-src # specifies which manifest can be applied to the resource
+        'self' # our manifest is always on our own domain
+        ;
+      navigate-to # restricts the URLs to which a document can initiate navigations by any means including <form> (if form-action is not specified), <a>, window.location, window.open, etc
+        'self' # allow navigating within our own site, but not anywhere else
+        ;
+      prefetch-src # specifies valid resources that may be prefetched or prerendered
+        'none' # we don't currently have any <link rel="prefetch" /> or the like -> prohibit until we do
+        ;
+      script-src # specifies valid sources for JavaScript; this includes not only URLs loaded directly into <script> elements, but also things like inline script event handlers (onclick) and XSLT stylesheets which can trigger script execution
+        'self' # allow only our own scripts
+        ;
+      script-src-attr # specifies valid sources for JavaScript inline event handlers; this includes only inline script event handlers like onclick, but not URLs loaded directly into <script> elements
+        'none' # we don't use any inline event handlers, only proper <script> elements -> prohibit them all
+        ;
+      style-src # specifies valid sources for stylesheets
+        'self' # allow our own CSS bundle; sadly, you also need 'unsafe-inline' for most CSS-in-JS solutions to work (e.g. https://styled-components.com/)
+        ;
+      style-src-attr # specifies valid sources for inline styles applied to individual DOM elements
+        'none' # we don't currently use any -> prohibit them all
+        ;
+      frame-src # specifies valid sources for nested browsing contexts loading using elements such as <frame> and <iframe>
+        'none' # don't allow us to be framed
+        ;
+
+    EOT
+    , "/#.*/", " "), "/[ \n]+/", " "), " ;", ";") # strip out comments and newlines, and collapse consecutive whitespace so the end-result looks pleasant
   }
 }
 ```
