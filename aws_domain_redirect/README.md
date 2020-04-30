@@ -23,7 +23,7 @@ Resources used:
 
 ## About CloudFront operations
 
-This module manages CloudFront distributions, and these operations are generally very slow. Your `terraform apply` may take anywhere **from 10 minutes up to 45 minutes** to complete. Be patient: if they start successfully, they almost always finish successfully, it just takes a while.
+This module manages CloudFront distributions, and these operations are generally very slow. Your `terraform apply` may take anywhere from a few minutes **up to 45 minutes** (if you're really unlucky). Be patient: if they start successfully, they almost always finish successfully, it just takes a while.
 
 Additionally, this module uses Lambda@Edge functions with CloudFront. Because Lambda@Edge functions are replicated, [they can't be deleted immediately](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html). This means a `terraform destroy` won't successfully remove all resources on its first run. It should complete successfully when running it again after a few hours, however.
 
@@ -44,14 +44,15 @@ provider "aws" {
 module "my_redirect" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_domain_redirect#inputs
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_domain_redirect?ref=v11.0"
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_domain_redirect?ref=v11.0"
+  providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   redirect_domain = "go.example.com"
   redirect_url    = "https://www.futurice.com/careers/"
 }
 ```
 
-Applying this **will take a very long time**, because both ACM and especially CloudFront are quite slow to update. After that, both `http://go.example.com` and `https://go.example.com` should redirect clients to `https://www.futurice.com/careers/`.
+Applying this will take a long time, because both ACM and especially CloudFront are quite slow to update. After that, both `http://go.example.com` and `https://go.example.com` should redirect clients to `https://www.futurice.com/careers/`.
 
 <!-- terraform-docs:begin -->
 ## Inputs
