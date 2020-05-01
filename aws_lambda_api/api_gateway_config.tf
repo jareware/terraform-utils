@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "this" {
-  name        = "${var.name_prefix}-rest-api"
+  name        = local.name_prefix
   description = "${var.comment_prefix}${var.api_domain}"
   tags        = var.tags
 }

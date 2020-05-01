@@ -3,8 +3,8 @@ variable "api_domain" {
 }
 
 variable "name_prefix" {
-  description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility)"
-  default     = "aws-lambda-api"
+  description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility); if omitted, a random, unique one will be used"
+  default     = ""
 }
 
 variable "comment_prefix" {
