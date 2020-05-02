@@ -43,6 +43,7 @@ resource "aws_ebs_volume" "my_data" {
   availability_zone = module.my_host.availability_zone # ensure the volume is created in the same AZ the docker host
   type              = "gp2"                            # i.e. "Amazon EBS General Purpose SSD"
   size              = 25                               # in GiB; if you change this in-place, you need to SSH over and run e.g. $ sudo resize2fs /dev/xvdh
+  tags              = { Name = "my-host-data" }        # make this resource easier to identify in the AWS Console (tag "Name" is effectively "display name" in some services)
 }
 
 module "my_host" {

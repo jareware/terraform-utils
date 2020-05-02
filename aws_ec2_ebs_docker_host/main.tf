@@ -7,9 +7,9 @@ resource "aws_instance" "this" {
   key_name               = aws_key_pair.this.id # the name of the SSH keypair to use for provisioning
   vpc_security_group_ids = [aws_security_group.this.id]
   subnet_id              = data.aws_subnet.this.id
-  user_data              = sha1(local.reprovision_trigger) # this value isn't used by the EC2 instance, but its change will trigger re-creation of the resource
-  tags                   = merge(var.tags, { Name = var.hostname })
-  volume_tags            = merge(var.tags, { Name = var.hostname }) # give the root EBS volume a name (+ other possible tags) that makes it easier to identify as belonging to this host
+  user_data              = sha1(local.reprovision_trigger)          # this value isn't used by the EC2 instance, but its change will trigger re-creation of the resource
+  tags                   = merge(var.tags, { Name = var.hostname }) # make this resource easier to identify in the AWS Console (tag "Name" is effectively "display name" in some services)
+  volume_tags            = merge(var.tags, { Name = var.hostname }) # ^ ditto
 
   root_block_device {
     volume_size = var.root_volume_size

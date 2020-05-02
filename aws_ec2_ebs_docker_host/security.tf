@@ -6,7 +6,7 @@ resource "aws_key_pair" "this" {
 # Create our default security group to access the instance, over specific protocols
 resource "aws_security_group" "this" {
   vpc_id = data.aws_vpc.this.id
-  tags   = merge(var.tags, { Name = var.hostname })
+  tags   = merge(var.tags, { Name = var.hostname }) # make this resource easier to identify in the AWS Console (tag "Name" is effectively "display name" in some services)
 }
 
 # Incoming SSH & outgoing ANY needs to be allowed for provisioning to work

@@ -4,7 +4,7 @@ resource "aws_acm_certificate" "this" {
   provider          = aws.us_east_1 # because ACM is only available in the "us-east-1" region
   domain_name       = var.api_domain
   validation_method = "DNS"                                         # the required records are created below
-  tags              = merge(var.tags, { Name = local.name_prefix }) # NOTE: the "Name" tag is special in ACM, in that it appears in web console listings (this is just for convenience, though)
+  tags              = merge(var.tags, { Name = local.name_prefix }) # make this resource easier to identify in the AWS Console (tag "Name" is effectively "display name" in some services)
 }
 
 # Add the DNS records needed by the ACM validation process
