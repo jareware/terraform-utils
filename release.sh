@@ -80,8 +80,8 @@ fi
 echo OK
 
 echo -n "Updating example code with new release... "
-find "$DIR"/* -name README.md | xargs sed -i '.sed-bak' -E "s/\?ref=v[0-9.]+\"/?ref=$tag_next\"/g" # update all "source" links in examples
-find "$DIR"/* -name README.md | xargs sed -i '.sed-bak' -E "s#/compare/v[0-9.]+...master#/compare/$tag_next...master#g" # update all "check for updates" links in examples
+find "$DIR"/* -name README.md | xargs sed -i'.sed-bak' -E "s/\?ref=v[0-9.]+\"/?ref=$tag_next\"/g" # update all "source" links in examples
+find "$DIR"/* -name README.md | xargs sed -i'.sed-bak' -E "s#/compare/v[0-9.]+...master#/compare/$tag_next...master#g" # update all "check for updates" links in examples
 echo OK
 
 echo -n "Updating Terraform module docs... "
