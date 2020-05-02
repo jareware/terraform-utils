@@ -1,10 +1,6 @@
-variable "cronjob_name" {
-  description = "Name which will be used to create your Lambda function (e.g. `\"my-important-cronjob\"`)"
-}
-
 variable "name_prefix" {
   description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility)"
-  default     = "aws-lambda-cronjob---"
+  default     = ""
 }
 
 variable "comment_prefix" {
@@ -43,12 +39,12 @@ variable "memory_size" {
 
 variable "function_runtime" {
   description = "Which node.js version should Lambda use for this function"
-  default     = "nodejs8.10"
+  default     = "nodejs12.x"
 }
 
 variable "function_env_vars" {
   description = "Which env vars (if any) to invoke the Lambda with"
-  type        = "map"
+  type        = map(string)
 
   default = {
     # This effectively useless, but an empty map can't be used in the "aws_lambda_function" resource
@@ -64,10 +60,6 @@ variable "lambda_logging_enabled" {
 
 variable "tags" {
   description = "AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/"
-  type        = "map"
+  type        = map(string)
   default     = {}
-}
-
-locals {
-  prefix_with_name = "${var.name_prefix}${replace("${var.cronjob_name}", "/[^a-z0-9-]+/", "-")}" # only lowercase alphanumeric characters and hyphens are allowed in e.g. S3 bucket names
 }
