@@ -13,7 +13,7 @@ resource "aws_api_gateway_integration" "proxy_root" {
   http_method             = aws_api_gateway_method.proxy_root.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = local.function_invoke_arn
+  uri                     = aws_lambda_function.this.invoke_arn
 }
 
 # Add a "proxy" resource, that matches all paths (except the root, defined above) and forwards them to our Lambda:
@@ -37,7 +37,7 @@ resource "aws_api_gateway_integration" "proxy_other" {
   http_method             = aws_api_gateway_method.proxy_other.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = local.function_invoke_arn
+  uri                     = aws_lambda_function.this.invoke_arn
 }
 
 resource "aws_api_gateway_method_response" "proxy_other" {
