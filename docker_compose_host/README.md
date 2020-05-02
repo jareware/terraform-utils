@@ -27,10 +27,10 @@ module "my_docker_compose" {
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
   source = "git::ssh://git@github.com/futurice/terraform-utils.git//docker_compose_host?ref=v11.0"
 
-  public_ip          = "${module.my_host.public_ip}"
-  ssh_username       = "${module.my_host.ssh_username}"
-  ssh_private_key    = "${module.my_host.ssh_private_key}"
-  docker_compose_yml = "${file("./docker-compose.yml")}"
+  public_ip          = module.my_host.public_ip
+  ssh_username       = module.my_host.ssh_username
+  ssh_private_key    = module.my_host.ssh_private_key
+  docker_compose_yml = file("./docker-compose.yml")
 }
 
 output "test_link" {

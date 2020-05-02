@@ -29,14 +29,9 @@ module "my_cronjob" {
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
   source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_cronjob?ref=v11.0"
 
-  cronjob_name           = "my-cronjob"
   schedule_expression    = "rate(5 minutes)" # note: full cron expressions are also supported
+  function_zipfile       = data.archive_file.lambda_zip.output_path
   lambda_logging_enabled = true
-
-  # lambda_zip.output_path will be absolute, i.e. different on different machines.
-  # This can cause Terraform to notice differences that aren't actually there, so let's convert it to a relative one.
-  # https://github.com/hashicorp/terraform/issues/7613#issuecomment-332238441
-  function_zipfile = "${substr(data.archive_file.lambda_zip.output_path, length(path.cwd) + 1, -1)}"
 }
 ```
 

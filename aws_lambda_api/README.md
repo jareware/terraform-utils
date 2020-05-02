@@ -38,15 +38,12 @@ data "archive_file" "lambda_zip" {
 module "my_api" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain             = "api.example.com"
+  function_zipfile       = data.archive_file.lambda_zip.output_path
   lambda_logging_enabled = true
-
-  # lambda_zip.output_path will be absolute, i.e. different on different machines.
-  # This can cause Terraform to notice differences that aren't actually there, so let's convert it to a relative one.
-  # https://github.com/hashicorp/terraform/issues/7613#issuecomment-332238441
-  function_zipfile = "${substr(data.archive_file.lambda_zip.output_path, length(path.cwd) + 1, -1)}"
 }
 ```
 
@@ -74,11 +71,11 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 module "my_api" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
-  api_domain             = "api.example.com"
-  lambda_logging_enabled = true
-  function_zipfile       = "./path/to/example-project/dist/lambda.zip"
+  api_domain       = "api.example.com"
+  function_zipfile = "./path/to/example-project/dist/lambda.zip"
 }
 ```
 
@@ -116,10 +113,11 @@ resource "aws_s3_bucket" "my_builds" {
 module "my_api_stage" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain         = "api-stage.example.com"
-  function_s3_bucket = "${aws_s3_bucket.my_builds.id}"
+  function_s3_bucket = aws_s3_bucket.my_builds.id
   function_zipfile   = "lambda-v123.zip"
 
   function_env_vars = {
@@ -130,10 +128,11 @@ module "my_api_stage" {
 module "my_api_prod" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
   # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v11.0"
+  providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain         = "api-prod.example.com"
-  function_s3_bucket = "${aws_s3_bucket.my_builds.id}"
+  function_s3_bucket = aws_s3_bucket.my_builds.id
   function_zipfile   = "lambda-v122.zip"
 
   function_env_vars = {
@@ -169,7 +168,7 @@ If something isn't working right with your API Gateway, set `api_gateway_logging
 
 ```tf
 resource "aws_api_gateway_account" "this" {
-  cloudwatch_role_arn = "${aws_iam_role.apigateway_cloudwatch_logging.arn}"
+  cloudwatch_role_arn = aws_iam_role.apigateway_cloudwatch_logging.arn
 }
 
 resource "aws_iam_role" "apigateway_cloudwatch_logging" {
@@ -193,7 +192,7 @@ EOF
 
 resource "aws_iam_role_policy" "apigateway_cloudwatch_logging" {
   name = "apigateway-cloudwatch-logging"
-  role = "${aws_iam_role.apigateway_cloudwatch_logging.id}"
+  role = aws_iam_role.apigateway_cloudwatch_logging.id
 
   policy = <<EOF
 {

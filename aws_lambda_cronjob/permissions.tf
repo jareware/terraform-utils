@@ -1,8 +1,7 @@
-# Allow Lambda to invoke our functions:
-
+# Allow Lambda to invoke our functions
 resource "aws_iam_role" "this" {
-  name = "${local.prefix_with_name}"
-  tags = "${var.tags}"
+  name = local.name_prefix
+  tags = var.tags
 
   assume_role_policy = <<EOF
 {
@@ -22,11 +21,10 @@ resource "aws_iam_role" "this" {
 EOF
 }
 
-# Allow writing logs to CloudWatch from our functions:
-
+# Allow writing logs to CloudWatch from our functions
 resource "aws_iam_policy" "this" {
-  count = "${var.lambda_logging_enabled ? 1 : 0}"
-  name  = "${local.prefix_with_name}"
+  count = var.lambda_logging_enabled ? 1 : 0
+  name  = local.name_prefix
 
   policy = <<EOF
 {
@@ -46,30 +44,31 @@ resource "aws_iam_policy" "this" {
 EOF
 }
 
+# Attach the policy to the role
 resource "aws_iam_role_policy_attachment" "this" {
-  count      = "${var.lambda_logging_enabled ? 1 : 0}"
-  role       = "${aws_iam_role.this.name}"
-  policy_arn = "${aws_iam_policy.this.arn}"
+  count      = var.lambda_logging_enabled ? 1 : 0
+  role       = aws_iam_role.this.name
+  policy_arn = aws_iam_policy.this[0].arn
 }
 
 # Add the scheduled execution rules & permissions:
 
 resource "aws_cloudwatch_event_rule" "this" {
-  name                = "${local.prefix_with_name}---scheduled-invocation"
-  schedule_expression = "${var.schedule_expression}"
-  tags                = "${var.tags}"
+  name                = "${local.name_prefix}-scheduled-invocation"
+  schedule_expression = var.schedule_expression
+  tags                = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "this" {
-  rule      = "${aws_cloudwatch_event_rule.this.name}"
-  target_id = "${aws_cloudwatch_event_rule.this.name}"
-  arn       = "${local.function_arn}"
+  rule      = aws_cloudwatch_event_rule.this.name
+  target_id = aws_cloudwatch_event_rule.this.name
+  arn       = aws_lambda_function.this.arn
 }
 
 resource "aws_lambda_permission" "this" {
-  statement_id  = "${local.prefix_with_name}---scheduled-invocation"
+  statement_id  = "${local.name_prefix}-scheduled-invocation"
   action        = "lambda:InvokeFunction"
-  function_name = "${local.function_id}"
+  function_name = aws_lambda_function.this.id
   principal     = "events.amazonaws.com"
-  source_arn    = "${aws_cloudwatch_event_rule.this.arn}"
+  source_arn    = aws_cloudwatch_event_rule.this.arn
 }

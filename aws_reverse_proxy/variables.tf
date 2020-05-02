@@ -3,8 +3,8 @@ variable "site_domain" {
 }
 
 variable "name_prefix" {
-  description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility)"
-  default     = "aws-reverse-proxy---"
+  description = "Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility); if omitted, a random, unique one will be used"
+  default     = ""
 }
 
 variable "comment_prefix" {
@@ -28,7 +28,7 @@ variable "viewer_https_only" {
 
 variable "cache_ttl_override" {
   description = "When `-1`, cache based on origin cache headers; when `0`, disable caching completely; when `>0`, cache ALL objects for this many seconds, regardless of their cache headers"
-  default     = 0
+  default     = -1
 }
 
 variable "default_root_object" {
@@ -38,13 +38,13 @@ variable "default_root_object" {
 
 variable "add_response_headers" {
   description = "Map of HTTP headers (if any) to add to outgoing responses before sending them to clients"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
 
 variable "hsts_max_age" {
   description = "How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false`"
-  default     = 31557600                                                                                                                             # i.e. one year in seconds
+  default     = 31557600 # i.e. one year in seconds
 }
 
 variable "origin_custom_header_name" {
@@ -65,18 +65,24 @@ variable "origin_custom_port" {
   default     = 0
 }
 
-variable "override_response_status" {
-  description = "When this and the other `override_response_*` variables are non-empty, skip sending the request to the origin altogether, and instead respond as instructed here"
+variable "override_response_code" {
+  description = "When non-empty, replace the HTTP status code received from the origin with this; e.g. override a `404` into a `200`"
   default     = ""
 }
 
-variable "override_response_status_description" {
-  description = "Same as `override_response_status`"
+variable "override_response_status" {
+  description = "When non-empty, replace the HTTP status description received from the origin with this; e.g. override a `\"Not Found\"` into a `\"OK\"`"
   default     = ""
 }
 
 variable "override_response_body" {
-  description = "Same as `override_response_status`"
+  description = "When this and ALL other `override_response_*` variables are non-empty, skip sending the request to the origin altogether, and instead respond as instructed here"
+  default     = ""
+}
+
+variable "override_only_on_code" {
+  description = "When non-empty, limits when `override_response_*` variables take effect; for example, setting this to `\"404\"` allows you to turn origin 404's into 200's, while still passing a 302 redirect through to the client (JS-style regex allowed)"
+  type        = string
   default     = ""
 }
 
@@ -101,24 +107,27 @@ variable "basic_auth_body" {
 }
 
 variable "lambda_logging_enabled" {
-  description = "When true, writes information about incoming requests to the Lambda function's CloudWatch group"
+  description = "When true, writes information about incoming requests to the Lambda function's CloudWatch group; IMPORTANT: Lambda@Edge will log to CloudWatch on the nearest region of the POP processing the request, NOT necessarily your own region."
   default     = false
 }
 
 variable "tags" {
   description = "AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
 
 locals {
-  prefix_with_domain = "${var.name_prefix}${replace("${var.site_domain}", "/[^a-z0-9-]+/", "-")}" # only lowercase alphanumeric characters and hyphens are allowed in S3 bucket names
-  error_ttl          = "${var.cache_ttl_override >= 0 ? var.cache_ttl_override : 0}"
+  error_ttl = var.cache_ttl_override >= 0 ? var.cache_ttl_override : 0
 }
 
 # Because CloudFront origins expect the URL to be provided as components, we need to do a bit of URL "parsing"
 locals {
-  url_protocol = "${replace("${var.origin_url}", "/^(?:(\\w+):\\/\\/).*/", "$1")}"
-  url_hostname = "${replace("${var.origin_url}", "/^(?:\\w+:\\/\\/)?([^/]+).*/", "$1")}"
-  url_path     = "${replace("${var.origin_url}", "/^(?:\\w+:\\/\\/)?[^/]+(?:\\/(.*)|$)/", "$1")}"
+  url_protocol = replace(var.origin_url, "/^(?:(\\w+):\\/\\/).*/", "$1")
+  url_hostname = replace(var.origin_url, "/^(?:\\w+:\\/\\/)?([^/]+).*/", "$1")
+  url_path = replace(
+    var.origin_url,
+    "/^(?:\\w+:\\/\\/)?[^/]+(?:\\/(.*)|$)/",
+    "$1",
+  )
 }
