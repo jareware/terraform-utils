@@ -32,7 +32,7 @@ variable "instance_type" {
 
 variable "instance_ami" {
   description = "See https://cloud-images.ubuntu.com/locator/ec2/ for options"
-  default     = "ami-0701e7be9b2a77600" # Ubuntu 18.04 LTS (eu-west-1, amd64, hvm:ebs-ssd, 2020-04-08), or "ami-0bdf93799014acdc4" for eu-central-1
+  default     = "ami-0dad359ff462124ca" # i.e. 20.04 LTS on eu-west-1; see https://cloud-images.ubuntu.com/locator/ec2/
 }
 
 variable "ssh_private_key_path" {
