@@ -1,7 +1,7 @@
 {
   "engines": {
-    "npm": "5.6.0",
-    "node": "8.10.0"
+    "node": ">=12 <13",
+    "npm": ">=6 <7"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.23",
