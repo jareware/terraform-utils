@@ -86,7 +86,7 @@ echo OK
 
 echo -n "Updating Terraform module docs... "
 for file in $(find $DIR/* -name README.md); do
-  perl -i -p0e "s/terraform-docs:begin.*?terraform-docs:end/terraform-docs:begin -->\n$(terraform-docs markdown table $(dirname $file) | sed 's#/#\\/#g')\n<\!-- terraform-docs:end/s" "$file"
+  perl -i -p0e "s/terraform-docs:begin.*?terraform-docs:end/terraform-docs:begin -->\n$(terraform-docs markdown --no-providers --no-requirements --no-sort $(dirname $file) | sed 's#/#\\/#g')\n<\!-- terraform-docs:end/s" "$file"
 done
 echo OK
 
