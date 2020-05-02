@@ -1,7 +1,7 @@
 module "aws_reverse_proxy" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_reverse_proxy#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v11.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_reverse_proxy?ref=v11.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_reverse_proxy?ref=v12.0"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   origin_url             = "http://example.com/" # note that this is just a dummy value to satisfy CloudFront, it won't ever be used with the override_* variables in place
