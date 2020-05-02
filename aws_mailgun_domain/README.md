@@ -24,8 +24,8 @@ provider "mailgun" {
 
 module "my_mailgun_domain" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_mailgun_domain#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_mailgun_domain?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_mailgun_domain?ref=v12.1"
 
   mail_domain   = "example.com"
   smtp_password = "SECRET SECRET SECRET"
@@ -65,17 +65,6 @@ After Mailgun is happy with your DNS records, however, you should get something 
 ...and you should receive the test email shortly.
 
 <!-- terraform-docs:begin -->
-## Requirements
-
-No requirements.
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| aws | n/a |
-| mailgun | n/a |
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -83,13 +72,13 @@ No requirements.
 | mail_domain | Domain which you want to use for sending/receiving email (e.g. `"example.com"`) | `any` | n/a | yes |
 | smtp_password | Password that Mailgun will require for sending out SMPT mail via this domain | `any` | n/a | yes |
 | spam_action | See https://www.terraform.io/docs/providers/mailgun/r/domain.html#spam_action | `string` | `"disabled"` | no |
-| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map` | `{}` | no |
 | wildcard | See https://www.terraform.io/docs/providers/mailgun/r/domain.html#wildcard | `bool` | `false` | no |
+| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| api_base_url | Base URL of the Mailgun API for your domain |
 | mail_domain | Domain which you want to use for sending/receiving email (e.g. `"example.com"`) |
+| api_base_url | Base URL of the Mailgun API for your domain |
 <!-- terraform-docs:end -->

@@ -11,8 +11,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"     # if you use shared Terraform state, consider changing this to something that doesn't depend on "~"
@@ -47,8 +47,8 @@ resource "aws_ebs_volume" "my_data" {
 
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
 
   hostname             = "my-host"
   ssh_private_key_path = "~/.ssh/id_rsa"           # note that with a shared Terraform state, paths with "~" will become problematic
@@ -96,8 +96,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"
@@ -129,8 +129,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"
@@ -183,50 +183,37 @@ Due to the limitation mentioned above, applying this for the first time is somew
 After the first apply, however, you don't need to take these special steps again.
 
 <!-- terraform-docs:begin -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| aws | n/a |
-| null | n/a |
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| allow_incoming_dns | Whether to allow incoming DNS traffic on the host security group | `bool` | `false` | no |
-| allow_incoming_http | Whether to allow incoming HTTP traffic on the host security group | `bool` | `false` | no |
-| allow_incoming_https | Whether to allow incoming HTTPS traffic on the host security group | `bool` | `false` | no |
-| data_volume_id | The ID of the EBS volume to mount as `/data` | `string` | `""` | no |
 | hostname | Hostname by which this service is identified in metrics, logs etc | `string` | `"aws-ec2-ebs-docker-host"` | no |
-| instance_ami | See https://cloud-images.ubuntu.com/locator/ec2/ for options | `string` | `"ami-0701e7be9b2a77600"` | no |
 | instance_type | See https://aws.amazon.com/ec2/instance-types/ for options; for example, typical values for small workloads are `"t2.nano"`, `"t2.micro"`, `"t2.small"`, `"t2.medium"`, and `"t2.large"` | `string` | `"t2.micro"` | no |
-| reprovision_trigger | An arbitrary string value; when this value changes, the host needs to be reprovisioned | `string` | `""` | no |
-| root_volume_size | Size (in GiB) of the EBS volume that will be created and mounted as the root fs for the host | `number` | `8` | no |
+| instance_ami | See https://cloud-images.ubuntu.com/locator/ec2/ for options | `string` | `"ami-0701e7be9b2a77600"` | no |
 | ssh_private_key_path | SSH private key file path, relative to Terraform project root | `string` | `"ssh.private.key"` | no |
 | ssh_public_key_path | SSH public key file path, relative to Terraform project root | `string` | `"ssh.public.key"` | no |
 | ssh_username | Default username built into the AMI (see 'instance_ami') | `string` | `"ubuntu"` | no |
+| vpc_id | ID of the VPC our host should join; if empty, joins your Default VPC | `string` | `""` | no |
+| reprovision_trigger | An arbitrary string value; when this value changes, the host needs to be reprovisioned | `string` | `""` | no |
+| root_volume_size | Size (in GiB) of the EBS volume that will be created and mounted as the root fs for the host | `number` | `8` | no |
+| data_volume_id | The ID of the EBS volume to mount as `/data` | `string` | `""` | no |
 | swap_file_size | Size of the swap file allocated on the root volume | `string` | `"512M"` | no |
 | swap_swappiness | Swappiness value provided when creating the swap file | `string` | `"10"` | no |
+| allow_incoming_http | Whether to allow incoming HTTP traffic on the host security group | `bool` | `false` | no |
+| allow_incoming_https | Whether to allow incoming HTTPS traffic on the host security group | `bool` | `false` | no |
+| allow_incoming_dns | Whether to allow incoming DNS traffic on the host security group | `bool` | `false` | no |
 | tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map(string)` | `{}` | no |
-| vpc_id | ID of the VPC our host should join; if empty, joins your Default VPC | `string` | `""` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| availability_zone | AWS Availability Zone in which the EC2 instance was created |
 | hostname | Hostname by which this service is identified in metrics, logs etc |
-| instance_id | AWS ID for the EC2 instance used |
 | public_ip | Public IP address assigned to the host by EC2 |
-| security_group_id | Security Group ID, for attaching additional security rules externally |
-| ssh_private_key | SSH private key that can be used to access the EC2 instance |
-| ssh_private_key_path | Path to SSH private key that can be used to access the EC2 instance |
+| instance_id | AWS ID for the EC2 instance used |
+| availability_zone | AWS Availability Zone in which the EC2 instance was created |
 | ssh_username | Username that can be used to access the EC2 instance over SSH |
+| ssh_private_key_path | Path to SSH private key that can be used to access the EC2 instance |
+| ssh_private_key | SSH private key that can be used to access the EC2 instance |
+| security_group_id | Security Group ID, for attaching additional security rules externally |
 <!-- terraform-docs:end -->

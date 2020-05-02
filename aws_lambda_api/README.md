@@ -37,8 +37,8 @@ data "archive_file" "lambda_zip" {
 
 module "my_api" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain             = "api.example.com"
@@ -70,8 +70,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_api" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain       = "api.example.com"
@@ -112,8 +112,8 @@ resource "aws_s3_bucket" "my_builds" {
 
 module "my_api_stage" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain         = "api-stage.example.com"
@@ -127,8 +127,8 @@ module "my_api_stage" {
 
 module "my_api_prod" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v12.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain         = "api-prod.example.com"
@@ -254,49 +254,35 @@ exports.handler = function(event, context, callback) {
 ```
 
 <!-- terraform-docs:begin -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| aws | n/a |
-| aws.us_east_1 | n/a |
-| random | n/a |
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | api_domain | Domain on which the Lambda will be made available (e.g. `"api.example.com"`) | `any` | n/a | yes |
+| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility); if omitted, a random, unique one will be used | `string` | `""` | no |
+| comment_prefix | This will be included in comments for resources that are created | `string` | `"Lambda API: "` | no |
+| function_zipfile | Path to a ZIP file that will be installed as the Lambda function (e.g. `"my-api.zip"`) | `any` | n/a | yes |
+| function_s3_bucket | When provided, the zipfile is retrieved from an S3 bucket by this name instead (filename is still provided via `function_zipfile`) | `string` | `""` | no |
+| function_handler | Instructs Lambda on which function to invoke within the ZIP file | `string` | `"index.handler"` | no |
+| function_timeout | The amount of time your Lambda Function has to run in seconds | `number` | `3` | no |
+| memory_size | Amount of memory in MB your Lambda Function can use at runtime | `number` | `128` | no |
+| function_runtime | Which node.js version should Lambda use for this function | `string` | `"nodejs12.x"` | no |
+| function_env_vars | Which env vars (if any) to invoke the Lambda with | `map(string)` | <pre>{<br>  "aws_lambda_api": ""<br>}</pre> | no |
+| stage_name | Name of the single stage created for the API on API Gateway | `string` | `"default"` | no |
+| lambda_logging_enabled | When true, writes any console output to the Lambda function's CloudWatch group | `bool` | `false` | no |
+| api_gateway_logging_level | Either `"OFF"`, `"INFO"` or `"ERROR"`; note that this requires having a CloudWatch log role ARN globally in API Gateway Settings | `string` | `"OFF"` | no |
 | api_gateway_cloudwatch_metrics | When true, sends metrics to CloudWatch | `bool` | `false` | no |
 | api_gateway_endpoint_config | Either `"EDGE"`, `"REGIONAL"` or `"PRIVATE"`; see https://docs.aws.amazon.com/apigateway/latest/developerguide/create-regional-api.html | `string` | `"EDGE"` | no |
-| api_gateway_logging_level | Either `"OFF"`, `"INFO"` or `"ERROR"`; note that this requires having a CloudWatch log role ARN globally in API Gateway Settings | `string` | `"OFF"` | no |
-| comment_prefix | This will be included in comments for resources that are created | `string` | `"Lambda API: "` | no |
-| function_env_vars | Which env vars (if any) to invoke the Lambda with | `map(string)` | <pre>{<br>  "aws_lambda_api": ""<br>}</pre> | no |
-| function_handler | Instructs Lambda on which function to invoke within the ZIP file | `string` | `"index.handler"` | no |
-| function_runtime | Which node.js version should Lambda use for this function | `string` | `"nodejs12.x"` | no |
-| function_s3_bucket | When provided, the zipfile is retrieved from an S3 bucket by this name instead (filename is still provided via `function_zipfile`) | `string` | `""` | no |
-| function_timeout | The amount of time your Lambda Function has to run in seconds | `number` | `3` | no |
-| function_zipfile | Path to a ZIP file that will be installed as the Lambda function (e.g. `"my-api.zip"`) | `any` | n/a | yes |
-| lambda_logging_enabled | When true, writes any console output to the Lambda function's CloudWatch group | `bool` | `false` | no |
-| memory_size | Amount of memory in MB your Lambda Function can use at runtime | `number` | `128` | no |
-| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility); if omitted, a random, unique one will be used | `string` | `""` | no |
-| stage_name | Name of the single stage created for the API on API Gateway | `string` | `"default"` | no |
 | tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map(string)` | `{}` | no |
-| throttling_burst_limit | How many burst requests should the API process at most; see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html | `number` | `5000` | no |
 | throttling_rate_limit | How many sustained requests per second should the API process at most; see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html | `number` | `10000` | no |
+| throttling_burst_limit | How many burst requests should the API process at most; see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html | `number` | `5000` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | function_name | This is the unique name of the Lambda function that was created |
+| web_endpoint | This URL can be used to invoke the Lambda through the API Gateway |
 | function_role | The IAM role for the function created; can be used to attach additional policies/permissions |
 | rest_api_name | Name of the API Gateway API that was created |
-| web_endpoint | This URL can be used to invoke the Lambda through the API Gateway |
 <!-- terraform-docs:end -->
