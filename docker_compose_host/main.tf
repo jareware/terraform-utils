@@ -1,7 +1,7 @@
 resource "null_resource" "provisioners" {
   triggers = {
-    docker_host_ip      = var.public_ip                   # whenever the docker host on which docker-compose runs changes, re-run the provisioners
-    reprovision_trigger = sha1(local.reprovision_trigger) # whenever the docker-compose config, environment etc changes, re-run the provisioners
+    docker_host_ip      = var.public_ip             # whenever the docker host on which docker-compose runs changes, re-run the provisioners
+    reprovision_trigger = local.reprovision_trigger # whenever the docker-compose config, environment etc changes, re-run the provisioners
   }
 
   connection {
