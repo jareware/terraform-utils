@@ -12,11 +12,11 @@ resource "aws_s3_bucket" "this" {
     max_age_seconds = 3000
   }
 
-  # Enable website hosting
-  # Note, though, that when accessing the bucket over its SSL endpoint, the index_document will not be used
+  # Enable website hosting.
+  # Note, though, that when accessing the bucket over its SSL endpoint, the index_document will not be used.
   website {
-    index_document = "index.html"
-    error_document = "error.html"
+    index_document = var.default_root_object
+    error_document = var.client_side_routing ? var.default_root_object : var.default_error_object # when enabled, our client-side routing should handle all URL's that don't point to a physical file on S3
   }
 }
 

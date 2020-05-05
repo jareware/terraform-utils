@@ -32,6 +32,16 @@ variable "default_root_object" {
   default     = "index.html"
 }
 
+variable "default_error_object" {
+  description = "The object to return when an unknown URL is requested"
+  default     = "error.html"
+}
+
+variable "client_side_routing" {
+  description = "When enabled, every request that doesn't match a static file in the bucket will get rewritten to the index file; this allows you to handle routing fully in client-side JavaScript"
+  default     = false
+}
+
 variable "add_response_headers" {
   description = "Map of HTTP headers (if any) to add to outgoing responses before sending them to clients"
   type        = map
