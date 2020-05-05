@@ -8,6 +8,107 @@ This repository contains reusable [Terraform](https://www.terraform.io/) utility
 1. Each module should have easy to use examples - for delicious copy-pasta
 1. Modules need not offer infinite flexibility, but do one thing well - users can always make their own module using ours as a baseline
 
+## Naming conventions
+
+### Short version
+
+For each module in this repository, you can either:
+
+- Provide a `name_prefix` as input, and all resources created by that module will have names starting with that prefix, or
+- Not provide `name_prefix`, and all resource names will have a unique, generated prefix, guaranteed to not conflict with other resource names
+
+### Longer version
+
+When creating resources on AWS, it's common to follow a hierarchical naming convention such as the following:
+
+1. All resources related to your app have names starting with `my-app`
+1. Then the environment (e.g. `dev` or `prod`)
+1. Then the component/tier (e.g. `frontend` or `backend`)
+1. Then a possible sub-component (e.g. `api` or `worker` for backend)
+1. Then a possible name for the individual resource (e.g. `logs` or `content`)
+
+If you model your Terraform module structure in the same fashion, you might end up with something like this:
+
+```
+my-app
+├── dev
+│   ├── backend
+│   │   ├── api
+│   │   └── worker
+│   │       └── logs
+│   └── frontend
+│       └── content
+└── prod
+    ├── backend
+    │   ├── api
+    │   └── worker
+    │       └── logs
+    └── frontend
+        └── content
+```
+
+And thus resource names like:
+
+```
+my-app-dev-backend
+my-app-dev-backend-api
+my-app-dev-backend-worker
+my-app-dev-backend-worker-logs
+my-app-dev-frontend
+my-app-dev-frontend-content
+my-app-prod-backend
+my-app-prod-backend-api
+my-app-prod-backend-worker
+my-app-prod-backend-worker-logs
+my-app-prod-frontend
+my-app-prod-frontend-content
+```
+
+An elegant way to implement this is to have each module take an input called `name_prefix`, and pass it along to its child modules. That is:
+
+1. In your root module, set `name_prefix` to a default value:
+   ```
+   variable "name_prefix" {
+     default = "my-app"
+   }
+   ```
+1. When you instantiate your main module for different environments, you pass along `name_prefix` with the appropriate suffix:
+
+   ```
+   module "dev" {
+     name_prefix = "${var.name_prefix}-dev"
+   }
+
+   module "prod" {
+     name_prefix = "${var.name_prefix}-prod"
+   }
+   ```
+
+1. Within that module, when you instantiate modules for backend & frontend, you again pass along `name_prefix`:
+   ```
+   module "backend" {
+     name_prefix = "${var.name_prefix}-backend"
+   }
+   ```
+1. And so on, for each level of the module hierarchy
+1. On any level, when creating resources, you do so using the same prefix, for example creating an S3 bucket:
+   ```
+   resource "aws_s3_bucket" "content" {
+     bucket = "${var.name_prefix}-content"
+   }
+   ```
+
+Thus, each module gets a dedicated namespace that's:
+
+- guaranteed to not conflict with resources from other modules
+- not tied to the top level namespace, facilitating reuse
+- easy to identify on the AWS web console as belonging to a specific env/component/etc
+- convenient for use with IAM permissions (e.g. granting dev env backend access to `my-app-dev-backend-*`, thus excluding the frontend component, and the production environment entirely)
+
+**All modules within this repository follow this convention**, taking a `name_prefix`, and passing it along to their child modules (if any).
+
+If you don't want to follow this convention, you can simply omit the `name_prefix` input. In that case, a unique name prefix is generated automatically (`"aws-static-site-2rdc7iqm"` for the `aws_static_site` module, for example), thus ensuring your resource names won't clash with those of others.
+
 ## Versioning policy
 
 1. New versions are released often, so users can pin their modules (using `master` as a `source` for Terraform modules is a terrible idea)
