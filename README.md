@@ -109,6 +109,10 @@ Thus, each module gets a dedicated namespace that's:
 
 If you don't want to follow this convention, you can simply omit the `name_prefix` input. In that case, a unique name prefix is generated automatically (`"aws-static-site-2rdc7iqm"` for the `aws_static_site` module, for example), thus ensuring your resource names won't clash with those of others.
 
+## Caveats
+
+- At the time of writing, [support for the `profile` property of the AWS provider is still... wonky](https://github.com/terraform-providers/terraform-provider-aws/issues/233), especially in cases where the provider needs to be aliased. Configuring your AWS provider via the standard `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables is recommended wholeheartedly.
+
 ## Versioning policy
 
 1. New versions are released often, so users can pin their modules (using `master` as a `source` for Terraform modules is a terrible idea)
