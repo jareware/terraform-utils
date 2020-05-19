@@ -47,8 +47,8 @@ provider "aws" {
 
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.0"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   site_domain = "hello.example.com"
@@ -86,8 +86,8 @@ Update the `my_site` module in Example 1 as follows:
 ```tf
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.0"
 
   site_domain = "hello.example.com"
 
@@ -109,8 +109,8 @@ For [additional security hardening of your static site](https://aws.amazon.com/b
 ```tf
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.0"
 
   site_domain = "hello.example.com"
 
@@ -221,6 +221,8 @@ Learn more about [effective caching strategies on CloudFront](../aws_reverse_pro
 | viewer_https_only | Set this to `false` if you need to support insecure HTTP access for clients, in addition to HTTPS | `bool` | `true` | no |
 | cache_ttl_override | When >= 0, override the cache behaviour for ALL objects in S3, so that they stay in the CloudFront cache for this amount of seconds | `number` | `-1` | no |
 | default_root_object | The object to return when the root URL is requested | `string` | `"index.html"` | no |
+| default_error_object | The object to return when an unknown URL is requested | `string` | `"error.html"` | no |
+| client_side_routing | When enabled, every request that doesn't match a static file in the bucket will get rewritten to the index file; this allows you to handle routing fully in client-side JavaScript | `bool` | `false` | no |
 | add_response_headers | Map of HTTP headers (if any) to add to outgoing responses before sending them to clients | `map` | `{}` | no |
 | hsts_max_age | How long should `Strict-Transport-Security` remain in effect for the site; disabled automatically when `viewer_https_only = false` | `number` | `31557600` | no |
 | basic_auth_username | When non-empty, require this username with HTTP Basic Auth | `string` | `""` | no |

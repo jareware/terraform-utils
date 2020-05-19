@@ -43,8 +43,8 @@ provider "aws" {
 
 module "my_redirect" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_domain_redirect#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_domain_redirect?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_domain_redirect?ref=v13.0"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   redirect_domain = "go.example.com"

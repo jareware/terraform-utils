@@ -37,8 +37,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
 
   email_domain   = "example.com"
   forward_all_to = ["john.doe@futurice.com"]
@@ -56,8 +56,8 @@ You can also have specific mailboxes forward email to specific addresses:
 ```tf
 module "my_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
 
   email_domain = "example.com"
 
@@ -90,8 +90,8 @@ resource "aws_ses_active_receipt_rule_set" "forwarding" {
 
 module "my_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
 
   rule_set_name  = aws_ses_receipt_rule_set.forwarding.rule_set_name
   email_domain   = "example.com"
@@ -100,8 +100,8 @@ module "my_email_forwarder" {
 
 module "other_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
 
   rule_set_name  = aws_ses_receipt_rule_set.forwarding.rule_set_name
   email_domain   = "example.org"
@@ -110,5 +110,29 @@ module "other_email_forwarder" {
 ```
 
 <!-- terraform-docs:begin -->
+## Inputs
 
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| email_domain | Domain on which the email forwarding should be set up (e.g. `"example.com"`) | `any` | n/a | yes |
+| name_prefix | Name prefix to use for objects that need to be created (only lowercase alphanumeric characters and hyphens allowed, for S3 bucket name compatibility) | `string` | `""` | no |
+| comment_prefix | This will be included in comments for resources that are created | `string` | `"SES Forwarder: "` | no |
+| from_name | Mailbox name from which forwarded emails are sent | `string` | `"noreply"` | no |
+| subject_prefix | Text to prepend to the subject of each email before forwarding it (e.g. `"Forwarded: "`) | `string` | `""` | no |
+| forward_all_to | List of addesses to which ALL incoming email should be forwarded | `list(string)` | `[]` | no |
+| forward_mapping | Map defining receiving mailboxes, and to which addesses they forward their incoming email; takes precedence over `forward_all_to` | `map(list(string))` | `{}` | no |
+| rule_set_name | Name of the externally provided SES Rule Set, if you want to manage it yourself | `string` | `""` | no |
+| skip_recipient_verification | If you're not in the SES sandbox, you don't need to verify individual recipients; see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html | `bool` | `false` | no |
+| function_timeout | The amount of time our Lambda Function has to run in seconds | `number` | `10` | no |
+| memory_size | Amount of memory in MB our Lambda Function can use at runtime | `number` | `128` | no |
+| function_runtime | Which node.js version should Lambda use for our function | `string` | `"nodejs12.x"` | no |
+| tags | AWS Tags to add to all resources created (where possible); see https://aws.amazon.com/answers/account-management/aws-tagging-strategies/ | `map(string)` | `{}` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| function_name | This is the unique name of the Lambda function that was created |
+| forward_mapping | Map defining receiving email addresses, and to which addesses they forward their incoming email |
+| distinct_recipients | Distinct recipient addresses mentioned in `forward_mapping` |
 <!-- terraform-docs:end -->

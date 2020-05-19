@@ -11,8 +11,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v13.0"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"     # if you use shared Terraform state, consider changing this to something that doesn't depend on "~"
@@ -48,8 +48,8 @@ resource "aws_ebs_volume" "my_data" {
 
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v13.0"
 
   hostname             = "my-host"
   ssh_private_key_path = "~/.ssh/id_rsa"           # note that with a shared Terraform state, paths with "~" will become problematic
@@ -97,8 +97,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v13.0"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"
@@ -130,8 +130,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ec2_ebs_docker_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v13.0"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"
@@ -190,7 +190,7 @@ After the first apply, however, you don't need to take these special steps again
 |------|-------------|------|---------|:--------:|
 | hostname | Hostname by which this service is identified in metrics, logs etc | `string` | `"aws-ec2-ebs-docker-host"` | no |
 | instance_type | See https://aws.amazon.com/ec2/instance-types/ for options; for example, typical values for small workloads are `"t2.nano"`, `"t2.micro"`, `"t2.small"`, `"t2.medium"`, and `"t2.large"` | `string` | `"t2.micro"` | no |
-| instance_ami | See https://cloud-images.ubuntu.com/locator/ec2/ for options | `string` | `"ami-0701e7be9b2a77600"` | no |
+| instance_ami | See https://cloud-images.ubuntu.com/locator/ec2/ for options | `string` | `"ami-0dad359ff462124ca"` | no |
 | ssh_private_key_path | SSH private key file path, relative to Terraform project root | `string` | `"ssh.private.key"` | no |
 | ssh_public_key_path | SSH public key file path, relative to Terraform project root | `string` | `"ssh.public.key"` | no |
 | ssh_username | Default username built into the AMI (see 'instance_ami') | `string` | `"ubuntu"` | no |

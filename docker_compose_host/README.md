@@ -13,8 +13,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_host" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/docker_compose_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ec2_ebs_docker_host?ref=v13.0"
 
   hostname             = "my-docker-host"
   ssh_private_key_path = "~/.ssh/id_rsa"
@@ -24,8 +24,8 @@ module "my_host" {
 
 module "my_docker_compose" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/docker_compose_host#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v12.1...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//docker_compose_host?ref=v12.1"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//docker_compose_host?ref=v13.0"
 
   public_ip          = module.my_host.public_ip
   ssh_username       = module.my_host.ssh_username
@@ -76,12 +76,12 @@ When running `terraform apply`, the previous `nginx` service will be stopped and
 | docker_compose_env | Env-vars (in `.env` file syntax) that will be substituted into docker-compose.yml (see https://docs.docker.com/compose/environment-variables/#the-env-file) | `string` | `"# No env-vars set"` | no |
 | docker_compose_yml | Contents for the `docker-compose.yml` file | `any` | n/a | yes |
 | docker_compose_override_yml | Contents for the `docker-compose.override.yml` file (see https://docs.docker.com/compose/extends/#multiple-compose-files) | `string` | `""` | no |
-| docker_compose_up_command | Command to start services with; you can customize this to do work before/after, or to disable this completely in favor of your own provisioning scripts | `string` | `"docker-compose pull --quiet 00260026 docker-compose up -d"` | no |
-| docker_compose_down_command | Command to remove services with; will be run during un- or re-provisioning | `string` | `"docker-compose stop 00260026 docker-compose rm -f"` | no |
+| docker_compose_up_command | Command to start services with; you can customize this to do work before/after, or to disable this completely in favor of your own provisioning scripts | `string` | `"docker-compose pull --quiet && docker-compose up -d"` | no |
+| docker_compose_down_command | Command to remove services with; will be run during un- or re-provisioning | `string` | `"docker-compose stop && docker-compose rm -f"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| reprovision_trigger | Hash of all docker-compose configuration used for this host; can be used as the `reprovision_trigger` input to an `aws_ec2_ebs_docker_host` module |
+| reprovision_trigger | Stringified version of all docker-compose configuration used for this host; can be used as the `reprovision_trigger` input to an `aws_ec2_ebs_docker_host` module |
 <!-- terraform-docs:end -->
