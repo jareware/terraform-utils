@@ -29,19 +29,21 @@ resource "aws_ses_email_identity" "recipient" {
 
 # Create a new SES rule set (only one can be active at a time, though)
 resource "aws_ses_receipt_rule_set" "this" {
+  count         = var.rule_set_name == "" ? 1 : 0
   rule_set_name = local.name_prefix
 }
 
 # Ensure our rule set is the active one
 resource "aws_ses_active_receipt_rule_set" "this" {
-  rule_set_name = aws_ses_receipt_rule_set.this.rule_set_name
+  count         = var.rule_set_name == "" ? 1 : 0
+  rule_set_name = var.rule_set_name == "" ? aws_ses_receipt_rule_set.this[0].rule_set_name : var.rule_set_name
 }
 
 # Configure actions SES should take when email comes in
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-receipt-rules.html#receiving-email-receipt-rules-set-up
 resource "aws_ses_receipt_rule" "store" {
   name          = local.name_prefix
-  rule_set_name = aws_ses_receipt_rule_set.this.rule_set_name
+  rule_set_name = var.rule_set_name == "" ? aws_ses_receipt_rule_set.this[0].rule_set_name : var.rule_set_name
   recipients    = [var.email_domain] # i.e. match all mailboxes on this domain
   enabled       = true
   scan_enabled  = true

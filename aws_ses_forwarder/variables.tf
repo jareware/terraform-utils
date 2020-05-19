@@ -34,6 +34,11 @@ variable "forward_mapping" {
   default     = {}
 }
 
+variable "rule_set_name" {
+  description = "Name of the externally provided SES Rule Set, if you want to manage it yourself"
+  default     = ""
+}
+
 variable "function_timeout" {
   description = "The amount of time our Lambda Function has to run in seconds"
   default     = 10
