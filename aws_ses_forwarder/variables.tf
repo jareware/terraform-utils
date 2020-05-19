@@ -39,6 +39,11 @@ variable "rule_set_name" {
   default     = ""
 }
 
+variable "skip_recipient_verification" {
+  description = "If you're not in the SES sandbox, you don't need to verify individual recipients; see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html"
+  default     = false
+}
+
 variable "function_timeout" {
   description = "The amount of time our Lambda Function has to run in seconds"
   default     = 10

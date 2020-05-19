@@ -23,7 +23,7 @@ resource "aws_route53_record" "mx_record" {
 
 # Because we assume we're in the SES sandbox, generate a verification for each email address to which we want to forward mail
 resource "aws_ses_email_identity" "recipient" {
-  for_each = local.distinct_recipients
+  for_each = var.skip_recipient_verification ? toset([]) : local.distinct_recipients
   email    = each.value
 }
 
