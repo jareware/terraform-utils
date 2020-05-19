@@ -60,3 +60,18 @@ resource "aws_ses_receipt_rule" "store" {
     position        = 2
   }
 }
+
+# Set up DKIM for our domain, to improve deliverability
+resource "aws_ses_domain_dkim" "this" {
+  domain = aws_ses_domain_identity.this.domain
+}
+
+# Publish the DKIM public key info on our DNS
+resource "aws_route53_record" "example_amazonses_dkim_record" {
+  count   = 3
+  zone_id = data.aws_route53_zone.this.zone_id
+  name    = "${element(aws_ses_domain_dkim.this.dkim_tokens, count.index)}._domainkey.${var.email_domain}"
+  type    = "CNAME"
+  ttl     = "600"
+  records = ["${element(aws_ses_domain_dkim.this.dkim_tokens, count.index)}.dkim.amazonses.com"]
+}
