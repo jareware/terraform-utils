@@ -47,8 +47,8 @@ provider "aws" {
 
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   site_domain = "hello.example.com"
@@ -86,8 +86,8 @@ Update the `my_site` module in Example 1 as follows:
 ```tf
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.1"
 
   site_domain = "hello.example.com"
 
@@ -109,8 +109,8 @@ For [additional security hardening of your static site](https://aws.amazon.com/b
 ```tf
 module "my_site" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_static_site#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_static_site?ref=v13.1"
 
   site_domain = "hello.example.com"
 

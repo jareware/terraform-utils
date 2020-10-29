@@ -37,8 +37,8 @@ data "archive_file" "lambda_zip" {
 
 module "my_api" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain             = "api.example.com"
@@ -70,8 +70,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_api" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain       = "api.example.com"
@@ -112,8 +112,8 @@ resource "aws_s3_bucket" "my_builds" {
 
 module "my_api_stage" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain         = "api-stage.example.com"
@@ -127,8 +127,8 @@ module "my_api_stage" {
 
 module "my_api_prod" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_lambda_api#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source    = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_lambda_api?ref=v13.1"
   providers = { aws.us_east_1 = aws.us_east_1 } # this alias is needed because ACM is only available in the "us-east-1" region
 
   api_domain         = "api-prod.example.com"

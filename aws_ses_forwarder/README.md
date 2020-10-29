@@ -37,8 +37,8 @@ Assuming you have the [AWS provider](https://www.terraform.io/docs/providers/aws
 ```tf
 module "my_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.1"
 
   email_domain   = "example.com"
   forward_all_to = ["john.doe@futurice.com"]
@@ -56,8 +56,8 @@ You can also have specific mailboxes forward email to specific addresses:
 ```tf
 module "my_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.1"
 
   email_domain = "example.com"
 
@@ -90,8 +90,8 @@ resource "aws_ses_active_receipt_rule_set" "forwarding" {
 
 module "my_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.1"
 
   rule_set_name  = aws_ses_receipt_rule_set.forwarding.rule_set_name
   email_domain   = "example.com"
@@ -100,8 +100,8 @@ module "my_email_forwarder" {
 
 module "other_email_forwarder" {
   # Available inputs: https://github.com/futurice/terraform-utils/tree/master/aws_ses_forwarder#inputs
-  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.0...master
-  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.0"
+  # Check for updates: https://github.com/futurice/terraform-utils/compare/v13.1...master
+  source = "git::ssh://git@github.com/futurice/terraform-utils.git//aws_ses_forwarder?ref=v13.1"
 
   rule_set_name  = aws_ses_receipt_rule_set.forwarding.rule_set_name
   email_domain   = "example.org"
