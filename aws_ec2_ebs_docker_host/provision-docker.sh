@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Install docker (convenience script isn't available for 20.04 LTS yet)
-sudo apt-get update && sudo apt-get install -y docker.io
+# https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+rm get-docker.sh
 
 # Allow using docker without sudo
 sudo usermod -aG docker $(whoami)
